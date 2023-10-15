@@ -1,11 +1,15 @@
-var express = require('express');
+import express, { json } from 'express';
+import { corsConfiguration } from './src/configuration/cors.js';
+import { establishmentsRouter } from './src/routes/establishments.js';
 
-var app = express(); 
+const app = express(); 
 
-app.get('/', function (req, res) {
-    res.send('Hello World!');
-}); 
+app.use(json());
+app.use(corsConfiguration());
+const PORT = 1234;
 
-app.listen(3000, function () {
-    console.log('Example app listening on port 3000!');
+app.use('/establishments', establishmentsRouter);
+
+app.listen(PORT,  () => {
+    console.log(`Example app listening on port ${PORT}`);
 });
