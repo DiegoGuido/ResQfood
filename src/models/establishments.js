@@ -1,10 +1,11 @@
 import { connection } from "../configuration/mysqlConnection.js";
+import { establishmentsQuerys } from "./querys/establishments.js";
 
 
 export class EstablishmentsModel {
     static async getAll({}){
         const [establishments]= await connection.query(
-            'SELECT establishment_id, nombre_establecimiento, direccion, descripcion, establishment_puntuacion FROM establishments; '
+            establishmentsQuerys.getAll
         )
         return establishments;
     }
@@ -12,7 +13,7 @@ export class EstablishmentsModel {
         if (name) {
             const lowerCaseName = name.toLowerCase();
             const [establishment] = await connection.query(
-                'SELECT establishment_id, nombre_establecimiento, direccion, descripcion, establishment_puntuacion FROM establishments WHERE LOWER(nombre_establecimiento) = ? LIMIT 1;',
+                establishmentsQuerys.getByName,
                 [lowerCaseName]
             );
             return establishment;
@@ -28,12 +29,9 @@ export class EstablishmentsModel {
 
         try {
              const result = await connection.query(
-                `INSERT INTO establishments
-                (nombre_establecimiento, direccion, descripcion, establishment_puntuacion)
-                VALUES (?,?,?,?);`,
+                establishmentsQuerys.create,
                 [nombre_establecimiento, direccion, descripcion, establishment_puntuacion]
             )
-            console.log(result);
             return "Se inserto el establecimiento de manera correcta";
         } catch (e) {
             return "Error al insertar, favor de contactar al administrador";
@@ -42,7 +40,7 @@ export class EstablishmentsModel {
     static async delete({id}){
         try {
             const eliminar = await connection.query(
-                'DELETE FROM establishments WHERE establishment_id = ?;',
+                establishmentsQuerys.delete,
                 [id]
             )
         
@@ -66,12 +64,7 @@ export class EstablishmentsModel {
 
         try {
             const result = await connection.query(
-               `UPDATE establishments SET 
-               nombre_establecimiento = ?,
-               direccion = ?,
-               descripcion = ?,
-               establishment_puntuacion = ?
-               WHERE establishment_id = ?;`,
+               establishmentsQuerys.update,
                [nombre_establecimiento, direccion, descripcion, establishment_puntuacion, establishment_id]
            )
 
